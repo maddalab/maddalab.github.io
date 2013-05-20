@@ -7,8 +7,7 @@
 	<meta name="author" content="Bhaskar Maddala">
 
 	
-	<meta name="description" content=" Blog Archives
-">
+	<meta name="description" content="If you are a Java programmer by now you are probably aware of the double checked locking concurrency anti-pattern. Incorrect double checked locking &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -77,6 +76,119 @@
 		
 	
 	<div id="content" class="inner">
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2010/03/27/on-why-double-checked-locking-is-an-anti-pattern/">
+		
+			On Why Double Checked Locking Is an Anti-pattern</a>
+	</h2>
+	<div class="entry-content">
+		<p>If you are a Java programmer by now you are probably aware of the double checked locking concurrency anti-pattern.</p>
+
+<figure class='code'><figcaption><span>Incorrect double checked locking </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ResourceAccessor</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Resource</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Resource</span> <span class="nf">getResource</span><span class="o">(){</span>
+</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">r</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kd">synchronized</span><span class="o">(</span><span class="n">ResourceAccessor</span><span class="o">.</span><span class="na">class</span><span class="o">){</span>
+</span><span class='line'>                <span class="k">if</span><span class="o">(</span><span class="n">r</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">r</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Resource</span><span class="o">();</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There are several variation of double check locking code style, but the important lines of code are 5 and 7. The check for resource before obtaining a lock on line 5 and a second check on line 7.</p>
+
+<p>This fancy trick employed specifically in early version of Java to optimize code to avoid (then) expensive lock operations has been found to be wrong. Often the best explanations will tell you that &ldquo;a second thread may see a partially constructed resource object&rdquo;.</p>
+
+<p>You might also find the following alternative of a correct implementation</p>
+
+<figure class='code'><figcaption><span>Correct double checked locking </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ResourceAccessor</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="n">Resource</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Resource</span> <span class="nf">getResource</span><span class="o">(){</span>
+</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">r</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kd">synchronized</span><span class="o">(</span><span class="n">ResourceAccessor</span><span class="o">.</span><span class="na">class</span><span class="o">){</span>
+</span><span class='line'>                <span class="k">if</span><span class="o">(</span><span class="n">r</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">r</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Resource</span><span class="o">();</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+
+		
+		<a href="/blog/2010/03/27/on-why-double-checked-locking-is-an-anti-pattern/" class="more-link">Read on &rarr;</a>
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-27T22:06:00-04:00" pubdate data-updated="true">Mar 27<span>th</span>, 2010</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/concurrency/'>Concurrency</a>, <a class='category' href='/blog/categories/java/'>Java</a>
+
+
+</div>
+	
+</div></article>
 
 <nav id="pagenavi">
     

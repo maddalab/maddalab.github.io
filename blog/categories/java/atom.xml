@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Java | Rentrant thoughts]]></title>
+  <link href="http://maddalab.github.io/blog/categories/java/atom.xml" rel="self"/>
+  <link href="http://maddalab.github.io/"/>
+  <updated>2013-05-19T22:46:03-04:00</updated>
+  <id>http://maddalab.github.io/</id>
+  <author>
+    <name><![CDATA[Bhaskar Maddala]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[On why double checked locking is an anti-pattern]]></title>
+    <link href="http://maddalab.github.io/blog/2010/03/27/on-why-double-checked-locking-is-an-anti-pattern/"/>
+    <updated>2010-03-27T22:06:00-04:00</updated>
+    <id>http://maddalab.github.io/blog/2010/03/27/on-why-double-checked-locking-is-an-anti-pattern</id>
+    <content type="html"><![CDATA[<p>If you are a Java programmer by now you are probably aware of the double checked locking concurrency anti-pattern.
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Incorrect double checked locking </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ResourceAccessor</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="n">Resource</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Resource</span> <span class="nf">getResource</span><span class="o">(){</span>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">r</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">synchronized</span><span class="o">(</span><span class="n">ResourceAccessor</span><span class="o">.</span><span class="na">class</span><span class="o">){</span>
+</span><span class='line'>            <span class="k">if</span><span class="o">(</span><span class="n">r</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">r</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Resource</span><span class="o">();</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+There are several variation of double check locking code style, but the important lines of code are 5 and 7. The check for resource before obtaining a lock on line 5 and a second check on line 7.</p>
+
+<p>This fancy trick employed specifically in early version of Java to optimize code to avoid (then) expensive lock operations has been found to be wrong. Often the best explanations will tell you that &ldquo;a second thread may see a partially constructed resource object&rdquo;.</p>
+
+<p>You might also find the following alternative of a correct implementation</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Correct double checked locking </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ResourceAccessor</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="n">Resource</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Resource</span> <span class="nf">getResource</span><span class="o">(){</span>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">r</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">synchronized</span><span class="o">(</span><span class="n">ResourceAccessor</span><span class="o">.</span><span class="na">class</span><span class="o">){</span>
+</span><span class='line'>            <span class="k">if</span><span class="o">(</span><span class="n">r</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">r</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Resource</span><span class="o">();</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<!-- more -->
+
+
+<p>The reason for both the correct and incorrect behavior are rooted in the Java Memory Model, which can be found at <a href="http://java.sun.com/docs/books/jls/third_edition/html/memory.html">Chapter 17</a> off the Java Language Specification. Unfortunately most explanation stop there, along with, on occasion a reference to the &ldquo;happens before&rdquo; ordering referenced by the Java Memory Model.</p>
+
+<p>We will dig a little deeper to try to better understand the reason for why double checked locking is incorrect and also look at why using a volatile reference to the variable fixes it.</p>
+
+<p>Abstractions while necessary to hide complexity in large systems also prevent us from gaining a better understanding the behavior of the systems. We will use java byte code in an attempt to help us understand the reasons, it serves our purpose in this instance, however be aware that byte code is only an abstraction.</p>
+
+<p>Java does not enforce a full execution order on code, it provides only a partial ordering defined in Chapter 17 of the language specification as happens-before. Quite simply it mean the results of a write by one thread are guaranteed to be visible to a read by another thread only if the write operation happens-before the read operation. Intuitively this is correct, however how does a programmer enforce a happens-before ordering in code.</p>
+
+<p>Happens-before ordering can be enforced using one of the synchronization mechanism provided by Java</p>
+
+<ul>
+<li>Locks, either intrinsic locking using synchronized or using locks from java.util.concurrent which have the same semantics as intrinsic locking</li>
+<li>volatile, reads and write to volatile variables are atomic.</li>
+<li>Thread.start() and Thread.join() method invocation</li>
+</ul>
+
+
+<p>A more refined version of happen-before ordering is defined in the package javadoc for java.util.concurrent as follows</p>
+
+<ul>
+<li>Each action in a thread happens-before every action in that thread that comes later in the program&rsquo;s order.</li>
+<li>An unlock (synchronized block or method exit) of a monitor happens-before every subsequent lock (synchronized block or method entry) of that same monitor. And because the happens-before relation is transitive, all actions of a thread prior to unlocking happen-before all actions subsequent to any thread locking that monitor.</li>
+<li>A write to a volatile field happens-before every subsequent read of that same field. Writes and reads of volatile fields have similar memory consistency effects as entering and exiting monitors, but do not entail mutual exclusion locking.</li>
+<li>A call to start on a thread happens-before any action in the started thread.</li>
+<li>All actions in a thread happen-before any other thread successfully returns from a join on that thread.</li>
+</ul>
+
+
+<p>Taking a closer look at the original double checked locking code (reproduced here)
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Incorrect double checked locking </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ResourceAccessor</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="n">Resource</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Resource</span> <span class="nf">getResource</span><span class="o">(){</span>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">r</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">synchronized</span><span class="o">(</span><span class="n">ResourceAccessor</span><span class="o">.</span><span class="na">class</span><span class="o">){</span>
+</span><span class='line'>            <span class="k">if</span><span class="o">(</span><span class="n">r</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">r</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Resource</span><span class="o">();</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>It would seems that the rule
+*   Each action in a thread happens-before every action in that thread that comes later in the program&rsquo;s order.
+would require that we see only references to resource r that are fully constructed. Since the program order requires that a new Resource() be created before being assigned to variable r.</p>
+
+<p>As mentioned previously the Java language is an abstraction over the byte code specification, and what seems like 2 statements from the Java language perspective is anything but</p>
+
+<p>The single statement translates to the following byte code</p>
+
+<p>```
+18: new #4; //class ResourceAccessor$Resource
+21: dup
+22: aconst_null
+23: invokespecial #5; //Method ResourceAccessor$Resource.&ldquo;
+&rdquo;:(LResourceAccessor$1;)V
+26: putstatic #2; //Field r:LResourceAccessor$Resource;</p>
+
+<p>Line 18 allocates memory
+Line 23 invokes the constructor
+Line 26 sets the reference to field r
+```</p>
+
+<p>It is possible that the reference to field r be set prior to execution of the constructor (change execution order of lines 23 and 26) all along staying within the constraints enforced by happens-before. In fact there is at least one example of such an occurrence.</p>
+
+<p>The reason that the following code</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Correct double checked locking </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ResourceAccessor</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="n">Resource</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Resource</span> <span class="nf">getResource</span><span class="o">(){</span>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">r</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">synchronized</span><span class="o">(</span><span class="n">ResourceAccessor</span><span class="o">.</span><span class="na">class</span><span class="o">){</span>
+</span><span class='line'>            <span class="k">if</span><span class="o">(</span><span class="n">r</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">r</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Resource</span><span class="o">();</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+executes correctly is because of the rule</p>
+
+<ul>
+<li>A write to a volatile field happens-before every subsequent read of that same field. Writes and reads of volatile fields have similar memory consistency effects as entering and exiting monitors, but do not entail mutual exclusion locking.</li>
+</ul>
+
+
+<p>which requires that the thread attempting to read variable r block until such time as resource referenced by r is not fully constructed.</p>
+]]></content>
+  </entry>
+  
+</feed>
