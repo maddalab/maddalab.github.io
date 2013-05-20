@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | Rentrant thoughts]]></title>
   <link href="http://maddalab.github.io/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://maddalab.github.io/"/>
-  <updated>2013-05-19T23:01:26-04:00</updated>
+  <updated>2013-05-20T09:14:57-04:00</updated>
   <id>http://maddalab.github.io/</id>
   <author>
     <name><![CDATA[Bhaskar Maddala]]></name>
@@ -12,6 +12,748 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Final modifiers on Method Parameter in Java]]></title>
+    <link href="http://maddalab.github.io/blog/2010/07/10/final-modifiers-on-method-parameter-in-java/"/>
+    <updated>2010-07-10T08:55:00-04:00</updated>
+    <id>http://maddalab.github.io/blog/2010/07/10/final-modifiers-on-method-parameter-in-java</id>
+    <content type="html"><![CDATA[<p>Every so often I run in a Java programmer who uses the final modifier in method parameters in Java. The code usually looks as follows</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Example </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">executeOperation</span><span class="o">(</span><span class="kd">final</span> <span class="n">OperationType</span> <span class="n">ot</span><span class="o">,</span> <span class="kd">final</span> <span class="n">OperationParameters</span> <span class="n">op</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>I often wonder whether the programmer has a sufficiently clear understanding of the final modifier when using it is such fashion. Given the JVM call by value semantics, there is only a small benefit associated with the additional typing undertaken to add the final modifier on each method parameter. One question you can expect from someone who has used the final modifier without understanding its implications (or lack of) in the context of method parameters involves overriding such methods and the resolution of the same. This question was recently asked on a mailing list I frequent.</p>
+
+<p>In the following code snippets
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Example </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Base</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">methodA</span><span class="o">(</span><span class="kd">final</span> <span class="n">Type</span> <span class="n">xyz</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Derived</span> <span class="kd">extends</span> <span class="n">Base</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">methodA</span><span class="o">(</span><span class="n">Type</span> <span class="n">xyz</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c1">// .. code</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">// Or when using interfaces</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Interface</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">methodA</span><span class="o">(</span><span class="kd">final</span> <span class="n">Type</span> <span class="n">xyz</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Implementation</span> <span class="kd">implements</span> <span class="n">Interface</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">methodA</span><span class="o">(</span><span class="n">Type</span> <span class="n">xyz</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+Why does the compiler not complain, since I am not overriding the method because the signature is not the same.</p>
+
+<p>There are obviously a couple of trivial answers, one of which provided in the mailing list is &ldquo;Whether or not a method parameter is final isn&rsquo;t one of the considerations taken into account when determining whether or not two methods have override-equivalent signature&rdquo;, accompanied by the obligatory reference to JLS 8.4.2 on Method Signatures. The answer adds to my chagrin, not only is it not a good answer it takes a good learning opportunity and converts it into a rote reference to printed material already available on the internet. This was the answer provided to the question on the mailing list and to my surprise was accepted by the original post.</p>
+
+<p>What then would be a sufficiently good answer? In the remainder of this post I set out my stall and attempt to address the original question. The goal it explain the reason for why the final modifier is not considered part of the method signature.</p>
+
+<p><!-- more --!></p>
+
+<p>One reason that I see increasingly more programmers using the final modifier on method parameter is the proliferation of programming languages on the JVM and the increasing extent of the use of multi core processors it is fanciful to try to bring the benefits of immutable state programming from the newer languages to Java. Programmers without a good understanding of any of the languages or the JVM mechanisms use final method modifiers excessively.</p>
+
+<p>Tho, the number of languages on the JVM it is worth recalling the the Java language and the JVM was developed at the same time, and that the JVM was developed primarily for execution of Java sources. As a consequence the JLS specification was constrained by implementation choices on the JVM and vice versa. There was no intention of hosting other languages on the JVM. This situation is currently changing with the upcoming Java 7 release of the language and JVM with support for closures and method handles in the language and the JVM respectively.</p>
+
+<p>What then prevent the JLS to enforce final annotation when resolving overridden method? The JVM obviously, has no knowledge of final modifiers on method parameters, they are just language syntactic sugar. We will demonstrate this using the following code, which uses ASM to perform byte code manipulation. (Explanation of the important snippets follows immediately after)</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Final Variable Transformer </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// FILE: FinalVariableTransformer.java&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">package</span> <span class="n">c</span><span class="o">.</span><span class="na">a</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">objectweb</span><span class="o">.</span><span class="na">asm</span><span class="o">.</span><span class="na">Opcodes</span><span class="o">.</span><span class="na">BIPUSH</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">objectweb</span><span class="o">.</span><span class="na">asm</span><span class="o">.</span><span class="na">Opcodes</span><span class="o">.</span><span class="na">ILOAD</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">objectweb</span><span class="o">.</span><span class="na">asm</span><span class="o">.</span><span class="na">Opcodes</span><span class="o">.</span><span class="na">IMUL</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">objectweb</span><span class="o">.</span><span class="na">asm</span><span class="o">.</span><span class="na">Opcodes</span><span class="o">.</span><span class="na">ISTORE</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">java.io.BufferedInputStream</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.BufferedOutputStream</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileInputStream</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileOutputStream</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.lang.instrument.ClassFileTransformer</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.lang.instrument.IllegalClassFormatException</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.lang.instrument.Instrumentation</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.security.ProtectionDomain</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">org.objectweb.asm.ClassAdapter</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.objectweb.asm.ClassReader</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.objectweb.asm.ClassVisitor</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.objectweb.asm.ClassWriter</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.objectweb.asm.MethodAdapter</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.objectweb.asm.MethodVisitor</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.objectweb.asm.Opcodes</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">class</span> <span class="nc">InsertInstructionMethodAdapter</span> <span class="kd">extends</span> <span class="n">MethodAdapter</span> <span class="o">{</span>
+</span><span class='line'> <span class="kd">public</span> <span class="nf">InsertInstructionMethodAdapter</span><span class="o">(</span><span class="n">MethodVisitor</span> <span class="n">mv</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">super</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="nd">@Override</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitVarInsn</span><span class="o">(</span><span class="kt">int</span> <span class="n">opcode</span><span class="o">,</span> <span class="kt">int</span> <span class="n">var</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">if</span> <span class="o">(</span><span class="n">opcode</span> <span class="o">==</span> <span class="n">Opcodes</span><span class="o">.</span><span class="na">ILOAD</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="n">var</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>   <span class="c1">// MULTIPLY VAR 1 (i) BY 2</span>
+</span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitVarInsn</span><span class="o">(</span><span class="n">ILOAD</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitIntInsn</span><span class="o">(</span><span class="n">BIPUSH</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitInsn</span><span class="o">(</span><span class="n">IMUL</span><span class="o">);</span>
+</span><span class='line'>   <span class="c1">// STORE VAR 1 (i)</span>
+</span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitVarInsn</span><span class="o">(</span><span class="n">ISTORE</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">super</span><span class="o">.</span><span class="na">visitVarInsn</span><span class="o">(</span><span class="n">opcode</span><span class="o">,</span> <span class="n">var</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">class</span> <span class="nc">InsertInstructionClassAdapter</span> <span class="kd">extends</span> <span class="n">ClassAdapter</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="n">InsertInstructionClassAdapter</span><span class="o">(</span><span class="n">ClassVisitor</span> <span class="n">cv</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">super</span><span class="o">(</span><span class="n">cv</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="nd">@Override</span>
+</span><span class='line'> <span class="kd">public</span> <span class="n">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">desc</span><span class="o">,</span>
+</span><span class='line'>   <span class="n">String</span> <span class="n">signature</span><span class="o">,</span> <span class="n">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">exceptions</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">if</span> <span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">timesTen</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;.</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span>
+</span><span class='line'>   <span class="k">return</span> <span class="k">new</span> <span class="nf">InsertInstructionMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">mv</span><span class="o">;</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">class</span> <span class="nc">InsertInstructionTransformer</span> <span class="kd">implements</span> <span class="n">ClassFileTransformer</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="nd">@Override</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">transform</span><span class="o">(</span><span class="n">ClassLoader</span> <span class="n">loader</span><span class="o">,</span> <span class="n">String</span> <span class="n">className</span><span class="o">,</span>
+</span><span class='line'>   <span class="n">Class</span> <span class="n">classBeingRedefined</span><span class="o">,</span> <span class="n">ProtectionDomain</span> <span class="n">protectionDomain</span><span class="o">,</span>
+</span><span class='line'>   <span class="kt">byte</span><span class="o">[]</span> <span class="n">classfileBuffer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IllegalClassFormatException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nf">transform</span><span class="o">(</span><span class="n">classfileBuffer</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">transform</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">classfileBuffer</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">ClassReader</span> <span class="n">cr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassReader</span><span class="o">(</span><span class="n">classfileBuffer</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">ClassWriter</span> <span class="n">cw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassWriter</span><span class="o">(</span><span class="n">ClassWriter</span><span class="o">.</span><span class="na">COMPUTE_FRAMES</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">ClassAdapter</span> <span class="n">ca</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InsertInstructionClassAdapter</span><span class="o">(</span><span class="n">cw</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">cr</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">ca</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">cw</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kt">void</span> <span class="n">transform</span><span class="o">(</span><span class="n">String</span> <span class="n">source</span><span class="o">,</span> <span class="n">String</span> <span class="n">target</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">writeFileAsBytes</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">target</span><span class="o">),</span> <span class="n">transform</span><span class="o">(</span><span class="n">getFileAsBytes</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">source</span><span class="o">))));</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kt">void</span> <span class="n">writeFileAsBytes</span><span class="o">(</span><span class="n">File</span> <span class="n">file</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">BufferedOutputStream</span> <span class="n">bos</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedOutputStream</span><span class="o">(&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="n">file</span><span class="o">));</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="n">bos</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">bos</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">private</span> <span class="kd">final</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">getFileAsBytes</span><span class="o">(</span><span class="kd">final</span> <span class="n">File</span> <span class="n">file</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">BufferedInputStream</span> <span class="n">bis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">file</span><span class="o">));</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[(</span><span class="kt">int</span><span class="o">)</span> <span class="n">file</span><span class="o">.</span><span class="na">length</span><span class="o">()];</span>
+</span><span class='line'>  <span class="n">bis</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">bis</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">bytes</span><span class="o">;</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FinalVariableTransformer</span> <span class="o">{</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="n">String</span> <span class="n">agentArguments</span><span class="o">,</span>
+</span><span class='line'>   <span class="n">Instrumentation</span> <span class="n">instrumentation</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">instrumentation</span><span class="o">.</span><span class="na">addTransformer</span><span class="o">(</span><span class="k">new</span> <span class="n">InsertInstructionTransformer</span><span class="o">());</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>   <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">Require</span> <span class="n">source</span> <span class="n">and</span> <span class="n">target</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;);</span>
+</span><span class='line'>   <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="n">InsertInstructionTransformer</span> <span class="n">transformer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InsertInstructionTransformer</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">transformer</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">],</span> <span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">// FILE META-INF/MANIFEST.MF</span>
+</span><span class='line'><span class="n">Manifest</span><span class="o">-</span><span class="nl">Version:</span> <span class="mf">1.0</span>
+</span><span class='line'><span class="n">Premain</span><span class="o">-</span><span class="nl">Class:</span> <span class="n">c</span><span class="o">.</span><span class="na">a</span><span class="o">.</span><span class="na">FinalVariableTransformer</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">// CLIENT CLASS</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Simple</span> <span class="o">{</span>
+</span><span class='line'> <span class="c1">// modify this to be timesTwenty</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">int</span> <span class="nf">timesTen</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">10</span><span class="o">;</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Simple</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">timesTen</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">// ON THE COMMAND LINE RUN WITH&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">java</span> <span class="o">-</span><span class="nl">javaagent:</span><span class="n">FinalVariableTransformerPackagedAsjar</span> <span class="n">Simple</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">// AND COMPARE RESULTS WITH JAVAP</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>It is quite a lot of code, let up take it down in small pieces. The following is the Manifest entry for the premain class when our code is packaged as a jar</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>MANIFEST.MF </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// FILE META-INF/MANIFEST.MF</span>
+</span><span class='line'><span class="n">Manifest</span><span class="o">-</span><span class="nl">Version:</span> <span class="mf">1.0</span>
+</span><span class='line'><span class="n">Premain</span><span class="o">-</span><span class="nl">Class:</span> <span class="n">c</span><span class="o">.</span><span class="na">a</span><span class="o">.</span><span class="na">FinalVariableTransformer</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The presence of the Premain-Class should indicate to the reader that the class provides a premain method for class instrumentation, using the java.lang.Instrumenation [2] API&rsquo;s. The class FinalVariableTransformer is defined as such</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Premain </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FinalVariableTransformer</span> <span class="o">{</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="n">String</span> <span class="n">agentArguments</span><span class="o">,</span>
+</span><span class='line'>   <span class="n">Instrumentation</span> <span class="n">instrumentation</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">instrumentation</span><span class="o">.</span><span class="na">addTransformer</span><span class="o">(</span><span class="k">new</span> <span class="n">InsertInstructionTransformer</span><span class="o">());</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>   <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">Require</span> <span class="n">source</span> <span class="n">and</span> <span class="n">target</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;);</span>
+</span><span class='line'>   <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="n">InsertInstructionTransformer</span> <span class="n">transformer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InsertInstructionTransformer</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">transformer</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">],</span> <span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>We implement the method premain with the signature as defined by the API&rsquo;s. We instantiate an instance of InsertInstructionTransformer and add it to the chain of applicable transformations by invoking add on the Instrumentation instance method parameter to premain. InsertInstructionTransformer is defined as below</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Instruction transformer </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">InsertInstructionTransformer</span> <span class="kd">implements</span> <span class="n">ClassFileTransformer</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="nd">@Override</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">transform</span><span class="o">(</span><span class="n">ClassLoader</span> <span class="n">loader</span><span class="o">,</span> <span class="n">String</span> <span class="n">className</span><span class="o">,</span>
+</span><span class='line'>   <span class="n">Class</span> <span class="n">classBeingRedefined</span><span class="o">,</span> <span class="n">ProtectionDomain</span> <span class="n">protectionDomain</span><span class="o">,</span>
+</span><span class='line'>   <span class="kt">byte</span><span class="o">[]</span> <span class="n">classfileBuffer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IllegalClassFormatException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nf">transform</span><span class="o">(</span><span class="n">classfileBuffer</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">transform</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">classfileBuffer</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">ClassReader</span> <span class="n">cr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassReader</span><span class="o">(</span><span class="n">classfileBuffer</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">ClassWriter</span> <span class="n">cw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassWriter</span><span class="o">(</span><span class="n">ClassWriter</span><span class="o">.</span><span class="na">COMPUTE_FRAMES</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">ClassAdapter</span> <span class="n">ca</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InsertInstructionClassAdapter</span><span class="o">(</span><span class="n">cw</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">cr</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">ca</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">cw</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kt">void</span> <span class="n">transform</span><span class="o">(</span><span class="n">String</span> <span class="n">source</span><span class="o">,</span> <span class="n">String</span> <span class="n">target</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">writeFileAsBytes</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">target</span><span class="o">),</span> <span class="n">transform</span><span class="o">(</span><span class="n">getFileAsBytes</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">source</span><span class="o">))));</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kt">void</span> <span class="n">writeFileAsBytes</span><span class="o">(</span><span class="n">File</span> <span class="n">file</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">BufferedOutputStream</span> <span class="n">bos</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedOutputStream</span><span class="o">(&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="n">file</span><span class="o">));</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="n">bos</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">bos</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">private</span> <span class="kd">final</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">getFileAsBytes</span><span class="o">(</span><span class="kd">final</span> <span class="n">File</span> <span class="n">file</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">BufferedInputStream</span> <span class="n">bis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">file</span><span class="o">));</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[(</span><span class="kt">int</span><span class="o">)</span> <span class="n">file</span><span class="o">.</span><span class="na">length</span><span class="o">()];</span>
+</span><span class='line'>  <span class="n">bis</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">bis</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">bytes</span><span class="o">;</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>InsertInstructionTransformer implements the interface ClassFileTransformer and provides an implementation of the transform method. While the class InsertInstructionTransformer has methods to obtain the bytes associated with a class, we are mostly interested in the following method</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Implementation of transform </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">transform</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">classfileBuffer</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">ClassReader</span> <span class="n">cr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassReader</span><span class="o">(</span><span class="n">classfileBuffer</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">ClassWriter</span> <span class="n">cw</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassWriter</span><span class="o">(</span><span class="n">ClassWriter</span><span class="o">.</span><span class="na">COMPUTE_FRAMES</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">ClassAdapter</span> <span class="n">ca</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InsertInstructionClassAdapter</span><span class="o">(</span><span class="n">cw</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">cr</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">ca</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">cw</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>ven a class file as a byte array, we instance an instance of ClassReader which is part of the ASM byte code manipulation library. The ASM library provide easy mechanism for byte code manipulation. The API provide 2 ways to access class byte code, one uses a Tree API and the other a Visitor design pattern. The following code uses the Visitor design pattern. Of interest to us is the implementation of InsertInstructionClassAdapter</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Instruction class adapter </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">InsertInstructionClassAdapter</span> <span class="kd">extends</span> <span class="n">ClassAdapter</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="n">InsertInstructionClassAdapter</span><span class="o">(</span><span class="n">ClassVisitor</span> <span class="n">cv</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">super</span><span class="o">(</span><span class="n">cv</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="nd">@Override</span>
+</span><span class='line'> <span class="kd">public</span> <span class="n">MethodVisitor</span> <span class="nf">visitMethod</span><span class="o">(</span><span class="kt">int</span> <span class="n">access</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">desc</span><span class="o">,</span>
+</span><span class='line'>   <span class="n">String</span> <span class="n">signature</span><span class="o">,</span> <span class="n">String</span><span class="o">[]</span> <span class="n">exceptions</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">MethodVisitor</span> <span class="n">mv</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">visitMethod</span><span class="o">(</span><span class="n">access</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">desc</span><span class="o">,</span> <span class="n">signature</span><span class="o">,&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">exceptions</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">if</span> <span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">timesTen</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;.</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span>
+</span><span class='line'>   <span class="k">return</span> <span class="k">new</span> <span class="nf">InsertInstructionMethodAdapter</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">mv</span><span class="o">;</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>InsertInstructionClassAdapter extends ClassAdapter and makes use of the method visitor returned by the super implementation. The default implementation of Visitor interfaces in ASM do not provide for any manipulation, that is out responsibility. We wish to change the byte code of any method with the name <code>timesTen</code> and return the method visitor implementation InsertInstructionMethodAdapter when a method with this name is encountered.</p>
+
+<p> us examine the class InsertInstructionMethodAdapter, reproduced below</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Instruction method adapter </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">InsertInstructionMethodAdapter</span> <span class="kd">extends</span> <span class="n">MethodAdapter</span> <span class="o">{</span>
+</span><span class='line'> <span class="kd">public</span> <span class="nf">InsertInstructionMethodAdapter</span><span class="o">(</span><span class="n">MethodVisitor</span> <span class="n">mv</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">super</span><span class="o">(</span><span class="n">mv</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="nd">@Override</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitVarInsn</span><span class="o">(</span><span class="kt">int</span> <span class="n">opcode</span><span class="o">,</span> <span class="kt">int</span> <span class="n">var</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">if</span> <span class="o">(</span><span class="n">opcode</span> <span class="o">==</span> <span class="n">Opcodes</span><span class="o">.</span><span class="na">ILOAD</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="n">var</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>   <span class="c1">// MULTIPLY VAR 1 (i) BY 2</span>
+</span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitVarInsn</span><span class="o">(</span><span class="n">ILOAD</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitIntInsn</span><span class="o">(</span><span class="n">BIPUSH</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitInsn</span><span class="o">(</span><span class="n">IMUL</span><span class="o">);</span>
+</span><span class='line'>   <span class="c1">// STORE VAR 1 (i)</span>
+</span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitVarInsn</span><span class="o">(</span><span class="n">ISTORE</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">super</span><span class="o">.</span><span class="na">visitVarInsn</span><span class="o">(</span><span class="n">opcode</span><span class="o">,</span> <span class="n">var</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>While the MethodVisitor provides for many methods to be overridden we override just the <code>visitVarInsn</code> method. On the occurrence of a load Opcode with for the first method parameter we insert the following opcodes prior to passing in the original opcode the the parent method adapter.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Method Visitor </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// MULTIPLY VAR 1 (i) BY 2</span>
+</span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitVarInsn</span><span class="o">(</span><span class="n">ILOAD</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitIntInsn</span><span class="o">(</span><span class="n">BIPUSH</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitInsn</span><span class="o">(</span><span class="n">IMUL</span><span class="o">);</span>
+</span><span class='line'>   <span class="c1">// STORE VAR 1 (i)</span>
+</span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitVarInsn</span><span class="o">(</span><span class="n">ISTORE</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>We load the first method parameter, push the constant 2 on to the stack, multiply the first 2 elements on the stack and store the result to the method parameter value. Looking at our Simple class, reproduced below</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Class to be modified </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// CLIENT CLASS</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Simple</span> <span class="o">{</span>
+</span><span class='line'> <span class="c1">// modify this to be timesTwenty</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">int</span> <span class="nf">timesTen</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">10</span><span class="o">;</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Simple</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">timesTen</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>It is the equivalent of performing the following source code transformation</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Class after modification </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// CLIENT CLASS</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Simple</span> <span class="o">{</span>
+</span><span class='line'> <span class="c1">// modify this to be timesTwenty</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">int</span> <span class="nf">timesTen</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">i</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>                    <span class="n">i</span> <span class="o">*=</span> <span class="mi">2</span><span class="o">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">return</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">10</span><span class="o">;</span>
+</span><span class='line'> <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Simple</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">timesTen</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Clearly this not something that the Java compiler would permit you to do, however running the code passes it through the byte code verifier that is part of the JVM and executes successfully with the result of multiplication by 20 rather than 10. Or put another way the JVM does not understand finality with reference to method parameters. Which begs the question, but why.</p>
+
+<p>As any Java programmer would tell in java you maintain and pass around reference to object. Most will also tell you that Java (by extension the JVM) supports only call by value. Often not understood and lost in the trivial statement of fact is how the references interact when passed by value. It is the value of the reference that is passed to the invoked method, take a moment to read that again, value of the reference. Any changes to the value does not impact the original reference, only changes to the referenced object are visible outside of the method when it returns. Or, the JVM has no use for enforcing of method parameter finality.</p>
+
+<p>[1] <a href="http://java.sun.com/docs/books/jls/third_edition/html/classes.html#38649">http://java.sun.com/docs/books/jls/third_edition/html/classes.html#38649</a>
+[2] <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/instrument/package-summary.html?PHPSESSID=99d1bf24adfefafb49c6f143c76dc59e">http://java.sun.com/j2se/1.5.0/docs/api/java/lang/instrument/package-summary.html?PHPSESSID=99d1bf24adfefafb49c6f143c76dc59e</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[On why double checked locking is an anti-pattern]]></title>
@@ -98,12 +840,12 @@ There are several variation of double check locking code style, but the importan
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<!-- more -->
-
-
 <p>The reason for both the correct and incorrect behavior are rooted in the Java Memory Model, which can be found at <a href="http://java.sun.com/docs/books/jls/third_edition/html/memory.html">Chapter 17</a> off the Java Language Specification. Unfortunately most explanation stop there, along with, on occasion a reference to the &ldquo;happens before&rdquo; ordering referenced by the Java Memory Model.</p>
 
 <p>We will dig a little deeper to try to better understand the reason for why double checked locking is incorrect and also look at why using a volatile reference to the variable fixes it.</p>
+
+<!-- more -->
+
 
 <p>Abstractions while necessary to hide complexity in large systems also prevent us from gaining a better understanding the behavior of the systems. We will use java byte code in an attempt to help us understand the reasons, it serves our purpose in this instance, however be aware that byte code is only an abstraction.</p>
 

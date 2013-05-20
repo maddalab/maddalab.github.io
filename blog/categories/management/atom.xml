@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: management | Rentrant thoughts]]></title>
+  <link href="http://maddalab.github.io/blog/categories/management/atom.xml" rel="self"/>
+  <link href="http://maddalab.github.io/"/>
+  <updated>2013-05-20T09:14:57-04:00</updated>
+  <id>http://maddalab.github.io/</id>
+  <author>
+    <name><![CDATA[Bhaskar Maddala]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Resumes are ridiculous but so are cover letters - A critique on Rework by 37Signals]]></title>
+    <link href="http://maddalab.github.io/blog/2010/03/28/resumes-are-ridiculous-but-so-are-cover-letters-a-critique-on-rework-by-37signals/"/>
+    <updated>2010-03-28T08:43:00-04:00</updated>
+    <id>http://maddalab.github.io/blog/2010/03/28/resumes-are-ridiculous-but-so-are-cover-letters-a-critique-on-rework-by-37signals</id>
+    <content type="html"><![CDATA[<p>37Signals as a company is an Outlier, successful from a number of measures and with limited success if viewed from a different perspective.</p>
+
+<p>Their recent book Rework shines a light on ideas and practices that makes them successful at what they do. 37Signals as a company considers itself to be successful, however with few ideas on how to scale their ideas. Measuring success unfortunately is based on the scale that you operate. Is 37Signals as successful as Apple? No. Will they ever be as successful as Apple? No. Do they care? No. While comparing most companies with Apple would make the company look unsuccessful, the measure of success is relative to your reference. Pick a company X that is substantially less successful than Apple and compare it with 37Signals, how does company X fare? Or 37Signals? On what measure of success do you compare? How does Apple from 10 yrs back compare to 37Signals.</p>
+
+<p>Human beings are inclined to be certain, certainty is a mental state, not unlike anger or pride it can help guide you but does not dependably reflect objective truth. If you make the mistake of emphasizing your certainty it provides a positive feedback loop making you entirely more certain <a href="http://www.amazon.com/Being-Certain-Believing-Right-Youre/dp/031254152X/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1269833754&amp;sr=1-1">on being certain</a>. This invariably results in downfall, you are <a href="http://www.amazon.com/Fooled-Randomness-Hidden-Chance-Markets/dp/1400067936/ref=sr_1_fkmr0_1?ie=UTF8&amp;qid=1269832205&amp;sr=1-1-fkmr0">fooled by randomness</a>, and fail to grasp the significance of the hidden role of chance in you success. Outwardly 37Signals as a company comes off as being certain (this may not be true once you are in the fold), but you should be aware of the positive reinforcement of being certain. Read Rework if you have to but do not use its pontification to validate your strategy. Test and retest your ideas often, be uncertain. You might find that previously successful ideas not longer work and vice verse.</p>
+
+<p>I have not read Rework, do not intend to. The book resonates with some <a href="http://superamit.tumblr.com/post/478158937/i-picked-up-and-read-the-new-37signals">entrepreneurs</a>. On the strategy of hiring the book says the following</p>
+
+<ul>
+<li><p>Resumes are ridiculous</p>
+
+<p>“You want a specific candidate who cares specifically about your company, your products, your customers, and your job… Check their cover letter … you hear someone’s actual voice and are able to recognize if it’s in tune with you and your company. Trust your gut reaction.”</p></li>
+</ul>
+
+
+<p>&ldquo;Check their cover letter&rdquo; are you kidding me, what bull. I certainly agree with the idea that resumes are ridiculous, however cover letters are an extension of the resume, written by the same individual, for the same purpose. They are just as ridiculous.</p>
+
+<p>You certainly want a candidate who cares about your company, your products and your customers. However care comes with trust, and trust is developed over a period of time, like in any symbiotic relationship. If you are true to yourself, look only for a candidate who cares about the job. Resumes, cover letters and what a candidate says (to be in tune with you and your company) only indicate that the candidate cares about the paycheck and benefits you might offer. Determine if the candidate cares about the job and he/she will eventually care about your company, product and customer.</p>
+
+<p>For a position in programming (which is what I am most familiar with and competent to speak about) it is fairly easy to determine if the candidate cares about the job. To care about the job the candidate needs to care about programming and in the age of the internet it is fairly easy to demonstrate.</p>
+
+<p>Do your research on the candidate, it is not just about knowing algorithms and the ability to apply those to problem solving it is also about what you have done with the ability in the past. A lot of companies hire candidates based on past performance. Do not look too far into the past, the immediate past is significantly better indicator of success. It does not matter that the candidate has graduated from a top tier school if it was 5 yrs in the past as it matters if the candidate contributes to open source projects? It does not matter if the candidate is a top performer during the past 5 yrs in his current position, if he/she desires to leave current employment determine why. If the candidate is leaving in spite of caring about the current company, product and customer, (on which you have to take the candidates word for), determine only if the candidate cares about the job. It is your best indicator of success.</p>
+
+<p>As a corollary, never hire someone who does not care about the job. But, you would never do that would you, irrespective of what their resume or cover letter says, would you?</p>
+
+<p>Am I being certain?</p>
+]]></content>
+  </entry>
+  
+</feed>

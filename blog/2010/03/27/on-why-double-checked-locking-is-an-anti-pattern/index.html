@@ -149,14 +149,12 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-
-
-<!-- more -->
-
-
 <p>The reason for both the correct and incorrect behavior are rooted in the Java Memory Model, which can be found at <a href="http://java.sun.com/docs/books/jls/third_edition/html/memory.html">Chapter 17</a> off the Java Language Specification. Unfortunately most explanation stop there, along with, on occasion a reference to the &ldquo;happens before&rdquo; ordering referenced by the Java Memory Model.</p>
 
 <p>We will dig a little deeper to try to better understand the reason for why double checked locking is incorrect and also look at why using a volatile reference to the variable fixes it.</p>
+
+<!-- more -->
+
 
 <p>Abstractions while necessary to hide complexity in large systems also prevent us from gaining a better understanding the behavior of the systems. We will use java byte code in an attempt to help us understand the reasons, it serves our purpose in this instance, however be aware that byte code is only an abstraction.</p>
 
