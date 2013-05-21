@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ByteCode | Rentrant thoughts]]></title>
   <link href="http://maddalab.github.io/blog/categories/bytecode/atom.xml" rel="self"/>
   <link href="http://maddalab.github.io/"/>
-  <updated>2013-05-20T09:14:57-04:00</updated>
+  <updated>2013-05-21T08:53:02-04:00</updated>
   <id>http://maddalab.github.io/</id>
   <author>
     <name><![CDATA[Bhaskar Maddala]]></name>
@@ -84,7 +84,8 @@ Why does the compiler not complain, since I am not overriding the method because
 
 <p>What then would be a sufficiently good answer? In the remainder of this post I set out my stall and attempt to address the original question. The goal it explain the reason for why the final modifier is not considered part of the method signature.</p>
 
-<p><!-- more --!></p>
+<!-- more -->
+
 
 <p>One reason that I see increasingly more programmers using the final modifier on method parameter is the proliferation of programming languages on the JVM and the increasing extent of the use of multi core processors it is fanciful to try to bring the benefits of immutable state programming from the newer languages to Java. Programmers without a good understanding of any of the languages or the JVM mechanisms use final method modifiers excessively.</p>
 
@@ -749,9 +750,6 @@ Why does the compiler not complain, since I am not overriding the method because
 <p>Clearly this not something that the Java compiler would permit you to do, however running the code passes it through the byte code verifier that is part of the JVM and executes successfully with the result of multiplication by 20 rather than 10. Or put another way the JVM does not understand finality with reference to method parameters. Which begs the question, but why.</p>
 
 <p>As any Java programmer would tell in java you maintain and pass around reference to object. Most will also tell you that Java (by extension the JVM) supports only call by value. Often not understood and lost in the trivial statement of fact is how the references interact when passed by value. It is the value of the reference that is passed to the invoked method, take a moment to read that again, value of the reference. Any changes to the value does not impact the original reference, only changes to the referenced object are visible outside of the method when it returns. Or, the JVM has no use for enforcing of method parameter finality.</p>
-
-<p>[1] <a href="http://java.sun.com/docs/books/jls/third_edition/html/classes.html#38649">http://java.sun.com/docs/books/jls/third_edition/html/classes.html#38649</a>
-[2] <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/instrument/package-summary.html?PHPSESSID=99d1bf24adfefafb49c6f143c76dc59e">http://java.sun.com/j2se/1.5.0/docs/api/java/lang/instrument/package-summary.html?PHPSESSID=99d1bf24adfefafb49c6f143c76dc59e</a></p>
 ]]></content>
   </entry>
   

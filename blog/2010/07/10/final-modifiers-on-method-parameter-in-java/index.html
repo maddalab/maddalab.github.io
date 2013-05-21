@@ -142,7 +142,8 @@
 
 <p>What then would be a sufficiently good answer? In the remainder of this post I set out my stall and attempt to address the original question. The goal it explain the reason for why the final modifier is not considered part of the method signature.</p>
 
-<p><!-- more --!></p>
+<!-- more -->
+
 
 <p>One reason that I see increasingly more programmers using the final modifier on method parameter is the proliferation of programming languages on the JVM and the increasing extent of the use of multi core processors it is fanciful to try to bring the benefits of immutable state programming from the newer languages to Java. Programmers without a good understanding of any of the languages or the JVM mechanisms use final method modifiers excessively.</p>
 
@@ -150,7 +151,7 @@
 
 <p>What then prevent the JLS to enforce final annotation when resolving overridden method? The JVM obviously, has no knowledge of final modifiers on method parameters, they are just language syntactic sugar. We will demonstrate this using the following code, which uses ASM to perform byte code manipulation. (Explanation of the important snippets follows immediately after)</p>
 
-<p><figure class='code'><figcaption><span>Final Variable Transformer </span></figcaption>
+<figure class='code'><figcaption><span>Final Variable Transformer </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -416,8 +417,8 @@
 </span><span class='line'><span class="o">}</span>
 </span><span class='line'>
 </span><span class='line'><span class="c1">// FILE META-INF/MANIFEST.MF</span>
-</span><span class='line'><span class="n">Manifest</span><span class="o">&ndash;</span><span class="nl">Version:</span> <span class="mf">1.0</span>
-</span><span class='line'><span class="n">Premain</span><span class="o">&ndash;</span><span class="nl">Class:</span> <span class="n">c</span><span class="o">.</span><span class="na">a</span><span class="o">.</span><span class="na">FinalVariableTransformer</span>
+</span><span class='line'><span class="n">Manifest</span><span class="o">-</span><span class="nl">Version:</span> <span class="mf">1.0</span>
+</span><span class='line'><span class="n">Premain</span><span class="o">-</span><span class="nl">Class:</span> <span class="n">c</span><span class="o">.</span><span class="na">a</span><span class="o">.</span><span class="na">FinalVariableTransformer</span>
 </span><span class='line'>
 </span><span class='line'><span class="c1">// CLIENT CLASS</span>
 </span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Simple</span> <span class="o">{</span>
@@ -434,25 +435,27 @@
 </span><span class='line'>
 </span><span class='line'><span class="c1">// ON THE COMMAND LINE RUN WITH</span>
 </span><span class='line'>
-</span><span class='line'><span class="n">java</span> <span class="o">&ndash;</span><span class="nl">javaagent:</span><span class="n">FinalVariableTransformerPackagedAsjar</span> <span class="n">Simple</span>
+</span><span class='line'><span class="n">java</span> <span class="o">-</span><span class="nl">javaagent:</span><span class="n">FinalVariableTransformerPackagedAsjar</span> <span class="n">Simple</span>
 </span><span class='line'>
 </span><span class='line'><span class="c1">// AND COMPARE RESULTS WITH JAVAP</span>
-</span></code></pre></td></tr></table></div></figure></p>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>It is quite a lot of code, let up take it down in small pieces. The following is the Manifest entry for the premain class when our code is packaged as a jar</p>
 
-<p><figure class='code'><figcaption><span>MANIFEST.MF </span></figcaption>
+<figure class='code'><figcaption><span>MANIFEST.MF </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// FILE META-INF/MANIFEST.MF</span>
-</span><span class='line'><span class="n">Manifest</span><span class="o">&ndash;</span><span class="nl">Version:</span> <span class="mf">1.0</span>
-</span><span class='line'><span class="n">Premain</span><span class="o">&ndash;</span><span class="nl">Class:</span> <span class="n">c</span><span class="o">.</span><span class="na">a</span><span class="o">.</span><span class="na">FinalVariableTransformer</span>
-</span></code></pre></td></tr></table></div></figure></p>
+</span><span class='line'><span class="n">Manifest</span><span class="o">-</span><span class="nl">Version:</span> <span class="mf">1.0</span>
+</span><span class='line'><span class="n">Premain</span><span class="o">-</span><span class="nl">Class:</span> <span class="n">c</span><span class="o">.</span><span class="na">a</span><span class="o">.</span><span class="na">FinalVariableTransformer</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The presence of the Premain-Class should indicate to the reader that the class provides a premain method for class instrumentation, using the java.lang.Instrumenation [2] API&rsquo;s. The class FinalVariableTransformer is defined as such</p>
 
-<p><figure class='code'><figcaption><span>Premain </span></figcaption>
+<figure class='code'><figcaption><span>Premain </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -483,11 +486,12 @@
 </span><span class='line'>  <span class="n">transformer</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">],</span> <span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
 </span><span class='line'> <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></p>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>We implement the method premain with the signature as defined by the API&rsquo;s. We instantiate an instance of InsertInstructionTransformer and add it to the chain of applicable transformations by invoking add on the Instrumentation instance method parameter to premain. InsertInstructionTransformer is defined as below</p>
 
-<p><figure class='code'><figcaption><span>Instruction transformer </span></figcaption>
+<figure class='code'><figcaption><span>Instruction transformer </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -564,11 +568,12 @@
 </span><span class='line'>  <span class="k">return</span> <span class="n">bytes</span><span class="o">;</span>
 </span><span class='line'> <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></p>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>InsertInstructionTransformer implements the interface ClassFileTransformer and provides an implementation of the transform method. While the class InsertInstructionTransformer has methods to obtain the bytes associated with a class, we are mostly interested in the following method</p>
 
-<p><figure class='code'><figcaption><span>Implementation of transform </span></figcaption>
+<figure class='code'><figcaption><span>Implementation of transform </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -583,11 +588,12 @@
 </span><span class='line'>  <span class="n">cr</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">ca</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
 </span><span class='line'>  <span class="k">return</span> <span class="n">cw</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
 </span><span class='line'> <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></p>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>ven a class file as a byte array, we instance an instance of ClassReader which is part of the ASM byte code manipulation library. The ASM library provide easy mechanism for byte code manipulation. The API provide 2 ways to access class byte code, one uses a Tree API and the other a Visitor design pattern. The following code uses the Visitor design pattern. Of interest to us is the implementation of InsertInstructionClassAdapter</p>
 
-<p><figure class='code'><figcaption><span>Instruction class adapter </span></figcaption>
+<figure class='code'><figcaption><span>Instruction class adapter </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -620,13 +626,14 @@
 </span><span class='line'>  <span class="k">return</span> <span class="n">mv</span><span class="o">;</span>
 </span><span class='line'> <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></p>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>InsertInstructionClassAdapter extends ClassAdapter and makes use of the method visitor returned by the super implementation. The default implementation of Visitor interfaces in ASM do not provide for any manipulation, that is out responsibility. We wish to change the byte code of any method with the name <code>timesTen</code> and return the method visitor implementation InsertInstructionMethodAdapter when a method with this name is encountered.</p>
 
 <p> us examine the class InsertInstructionMethodAdapter, reproduced below</p>
 
-<p><figure class='code'><figcaption><span>Instruction method adapter </span></figcaption>
+<figure class='code'><figcaption><span>Instruction method adapter </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -667,11 +674,12 @@
 </span><span class='line'>  <span class="kd">super</span><span class="o">.</span><span class="na">visitVarInsn</span><span class="o">(</span><span class="n">opcode</span><span class="o">,</span> <span class="n">var</span><span class="o">);</span>
 </span><span class='line'> <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></p>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>While the MethodVisitor provides for many methods to be overridden we override just the <code>visitVarInsn</code> method. On the occurrence of a load Opcode with for the first method parameter we insert the following opcodes prior to passing in the original opcode the the parent method adapter.</p>
 
-<p><figure class='code'><figcaption><span>Method Visitor </span></figcaption>
+<figure class='code'><figcaption><span>Method Visitor </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -684,11 +692,12 @@
 </span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitInsn</span><span class="o">(</span><span class="n">IMUL</span><span class="o">);</span>
 </span><span class='line'>   <span class="c1">// STORE VAR 1 (i)</span>
 </span><span class='line'>   <span class="n">mv</span><span class="o">.</span><span class="na">visitVarInsn</span><span class="o">(</span><span class="n">ISTORE</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure></p>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>We load the first method parameter, push the constant 2 on to the stack, multiply the first 2 elements on the stack and store the result to the method parameter value. Looking at our Simple class, reproduced below</p>
 
-<p><figure class='code'><figcaption><span>Class to be modified </span></figcaption>
+<figure class='code'><figcaption><span>Class to be modified </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -713,11 +722,12 @@
 </span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">timesTen</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
 </span><span class='line'> <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></p>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>It is the equivalent of performing the following source code transformation</p>
 
-<p><figure class='code'><figcaption><span>Class after modification </span></figcaption>
+<figure class='code'><figcaption><span>Class after modification </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -735,8 +745,8 @@
 </span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Simple</span> <span class="o">{</span>
 </span><span class='line'> <span class="c1">// modify this to be timesTwenty</span>
 </span><span class='line'> <span class="kd">public</span> <span class="kt">int</span> <span class="nf">timesTen</span><span class="o">(</span><span class="kd">final</span> <span class="kt">int</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                        <span class="n">i</span> <span class="o"><em>=</span> <span class="mi">2</span><span class="o">;</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">i</span> <span class="o"></em></span> <span class="mi">10</span><span class="o">;</span>
+</span><span class='line'>                        <span class="n">i</span> <span class="o">*=</span> <span class="mi">2</span><span class="o">;</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">10</span><span class="o">;</span>
 </span><span class='line'> <span class="o">}</span>
 </span><span class='line'>
 </span><span class='line'> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
@@ -744,14 +754,12 @@
 </span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">timesTen</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
 </span><span class='line'> <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></p>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Clearly this not something that the Java compiler would permit you to do, however running the code passes it through the byte code verifier that is part of the JVM and executes successfully with the result of multiplication by 20 rather than 10. Or put another way the JVM does not understand finality with reference to method parameters. Which begs the question, but why.</p>
 
 <p>As any Java programmer would tell in java you maintain and pass around reference to object. Most will also tell you that Java (by extension the JVM) supports only call by value. Often not understood and lost in the trivial statement of fact is how the references interact when passed by value. It is the value of the reference that is passed to the invoked method, take a moment to read that again, value of the reference. Any changes to the value does not impact the original reference, only changes to the referenced object are visible outside of the method when it returns. Or, the JVM has no use for enforcing of method parameter finality.</p>
-
-<p>[1] <a href="http://java.sun.com/docs/books/jls/third_edition/html/classes.html#38649">http://java.sun.com/docs/books/jls/third_edition/html/classes.html#38649</a>
-[2] <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/instrument/package-summary.html?PHPSESSID=99d1bf24adfefafb49c6f143c76dc59e">http://java.sun.com/j2se/1.5.0/docs/api/java/lang/instrument/package-summary.html?PHPSESSID=99d1bf24adfefafb49c6f143c76dc59e</a></p>
 </div>
 
 
